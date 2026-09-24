@@ -1,5 +1,7 @@
 # 📏 Naive Prognose – die Messlatte
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-naive-forecast-demo.streamlit.app/)**
+
 Erstes Stück (Wurzel) der **Zeitreihen-Prognose-Linie** der "Konzepte"-Reihe im Portfolio von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning – und die erste Linie des Portfolios mit Prognosen
 (geplant sind zehn weitere Stücke: Exponentielle Glättung, ARIMA, Dynamische Regression, Croston-Verfahren, Boosting, Prognoseintervalle, Hierarchische Abstimmung, Kombination, Prognose → Bestand und ein vortrainiertes Netz; noch nicht gebaut).
 
