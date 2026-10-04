@@ -50,7 +50,8 @@ def test_one_weekday_preset():
     a = _preset("Ursprünge nur an einem Wochentag")
     std = _preset("Standardfall")
     assert len(a.origins) == 51 and a.summary["naive"]["mase"] == pytest.approx(2.21, abs=0.05) and a.summary["naive"]["mase"] < std.summary["naive"]["mase"] - 0.3
-    for m in ("snaive", "snaive_k", "mean"):
+    assert a.summary["drift"]["mase"] == pytest.approx(2.21, abs=0.05) and std.summary["drift"]["mase"] == pytest.approx(2.69, abs=0.05)
+    for m in ("snaive", "snaive_k", "mean", "snaive_year"):
         assert a.summary[m]["mase"] == pytest.approx(std.summary[m]["mase"], abs=0.02)
 
 

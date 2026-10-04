@@ -3,7 +3,7 @@
 **[→ Demo live ausprobieren](https://sebastianhanisch-naive-forecast-demo.streamlit.app/)**
 
 Erstes Stück (Wurzel) der **Zeitreihen-Prognose-Linie** der "Konzepte"-Reihe im Portfolio von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning – und die erste Linie des Portfolios mit Prognosen
-(geplant sind zehn weitere Stücke: Exponentielle Glättung, ARIMA, Dynamische Regression, Croston-Verfahren, Boosting, Prognoseintervalle, Hierarchische Abstimmung, Kombination, Prognose → Bestand und ein vortrainiertes Netz; noch nicht gebaut).
+(dazu zehn weitere Stücke, inzwischen alle gebaut: Exponentielle Glättung, ARIMA, Dynamische Regression, Croston-Verfahren, Boosting, Prognoseintervalle, Hierarchische Abstimmung, Kombination, Prognose → Bestand und ein vortrainiertes Netz).
 
 Bevor ein Prognoseverfahren etwas taugt, muss es eine **naive Prognose** schlagen: den letzten Wert fortschreiben, den Wert derselben Woche wiederholen, über ein paar Wochen mitteln. Die Demo zeigt an den **Tagesaufträgen eines Depots** (drei Jahre täglich, Wochenmuster, Trend,
 Jahresmuster, Feiertage, Aktionen, auf Wunsch ein Niveausprung), wie weit sechs solche Verfahren kommen – und genauso wichtig, **wie man Prognosen fair vergleicht**: mit vielen Ursprüngen statt einem Testzeitraum (Rolling-Origin) und mit einer Kennzahl, die nicht vom Niveau der Reihe abhängt (MASE).
@@ -44,7 +44,7 @@ Der Plan der Linie erwartete: "Naive ist schwer zu schlagen". Die Messung differ
 | Standardfall (Preset, Seed 3) | Wochenmittel 0,88, saisonal naiv 1,12, Vorjahr 1,14, Mittelwert 2,14, naiv 2,68, Drift 2,69, Orakel 0,75 (das beste Verfahren liegt 17 % darüber). | `test_standard_preset` |
 | **Wie verlässlich ist ein einzelner Testzeitraum?** (alle Ursprünge des Testjahres, 12 Seeds) | Über alle Ursprünge gewinnt das Wochenmittel in allen 12 Reihen; in einem einzelnen Ursprung aber nur in **67,4 %** der Fälle (saisonal naiv 16,0 %, Vorjahr 16,5 %, naiv, Mittelwert und Drift praktisch nie). In **32,6 ± 2,1 %** der Ursprünge steht ein anderes Verfahren vorn. Die MASE des besten Verfahrens streut je Ursprung zwischen 0,64 und 1,34 (10. bis 90. Perzentil). | `test_split_experiment_names_the_wrong_winner_in_a_third_of_the_origins` |
 | **Wann hilft Mitteln?** (Rauschen 0,04 / 0,08 / 0,14 / 0,24 / 0,40) | Vorsprung des Wochenmittels vor der letzten Woche: **+0,04 ± 0,02**, +0,17 ± 0,01, +0,22 ± 0,01, +0,24 ± 0,01, +0,24 ± 0,01 MASE-Punkte. Orakel-Untergrenze 0,48 / 0,64 / 0,74 / 0,78 / 0,81. Bei Rauschen 0,40 schlägt sogar der **Mittelwert über die ganze Vergangenheit (1,12) die saisonal naive letzte Woche (1,16)**; das Vorjahr liegt bei 0,04 mit 1,58, bei 0,40 mit 1,10. | `test_noise_experiment` |
-| **Hängt das Ergebnis vom Wochentag des Ursprungs ab?** (Abstand 7, letzter bekannter Tag Mo bis So) | Naiv: 2,39 / 2,31 / **2,21** / 2,28 / 2,74 / 3,12 / **4,09**; Wochenmittel dagegen immer 0,95, saisonal naiv 1,17. Wer nur Ursprünge an einem Wochentag auswertet, macht das naive Verfahren besser oder schlechter, als es ist. Preset (Seed 3, 51 Ursprünge am selben Wochentag): naiv 2,21 statt 2,68. | `test_weekday_experiment`, `test_one_weekday_preset` |
+| **Hängt das Ergebnis vom Wochentag des Ursprungs ab?** (Abstand 7, letzter bekannter Tag Mo bis So) | Naiv: 2,39 / 2,31 / **2,21** / 2,28 / 2,74 / 3,12 / **4,09**; Wochenmittel dagegen immer 0,95, saisonal naiv 1,17. Wer nur Ursprünge an einem Wochentag auswertet, macht das naive Verfahren besser oder schlechter, als es ist. Preset (Seed 3, 51 Ursprünge am selben Wochentag): naiv 2,21 statt 2,68, Drift 2,21 statt 2,69. | `test_weekday_experiment`, `test_one_weekday_preset` |
 | **Trend** (−20 / 0 / +10 / +25 / +40 % je Jahr) | Wochenmittel 0,53 / 0,84 / 0,95 / 1,08 / 1,19; Vorjahr 1,49 bei −20 % und **1,93** bei +40 % (verpasst das Wachstum); Drift höchstens 0,02 neben naiv. Preset "Starker Trend": Wochenmittel 1,11, saisonal naiv 1,42, Vorjahr 1,88, naiv 3,39, Drift 3,40, Orakel 0,94. | `test_trend_and_window_experiments`, `test_strong_trend_preset` |
 | **Niveausprung +30 %** und Fenster (wachsend / 4 / 8 / 13 / 26 Wochen) | Mittelwert: **3,00** (wachsend), **2,43** (4 Wochen), 2,72 (26 Wochen); Drift dagegen schlechter mit kleinem Fenster: **3,20** (wachsend), **3,67** (4 Wochen), weil eine kurze Steigung vor allem den Wochentag misst; Wochenmittel 1,15, Vorjahr 1,96 (blind für den Sprung). Preset (Seed 3, Sprung an Tag 809, Fenster 8 Wochen): Mittelwert 2,49 (wachsend 3,02), Wochenmittel 1,08, saisonal naiv 1,36, Vorjahr 2,15, Drift 3,46 (wachsend 3,25). | `test_trend_and_window_experiments`, `test_level_shift_preset_and_the_growing_window_is_worse_for_mean_and_drift` |
 | Starkes Rauschen (Preset, Seed 3, 0,4) | Mittelwert 1,05 schlägt saisonal naiv 1,14; Wochenmittel 0,86, Orakel 0,81. | `test_strong_noise_preset_the_plain_mean_beats_last_week` |
@@ -56,10 +56,10 @@ Die Preset-Zeilen sind **Einzelreihen** (Seed 3); belastbar sind die Zeilen übe
 
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
-| **Die Zukunft ähnelt der letzten Woche** | Trend, Niveausprung, Feiertage und Aktionen kennen die naiven Verfahren nicht: der Fehler wächst mit dem Trend, nach einem Sprung dauert es Wochen. | Exponentielle Glättung, Dynamische Regression (geplant) |
-| **Eine Reihe genügt** | Alle Verfahren sehen nur die eigene Reihe; ähnliche Depots teilen ihr Wissen nicht. | Globale Modelle: Boosting, Vortrainiertes Netz (geplant) |
-| **Es gibt eine Punktprognose** | Das Rauschen der Reihe bleibt: die Untergrenze ist nicht null, und die Prognose sagt nichts über das Risiko. | Prognoseintervalle (geplant) |
-| **Der Bedarf ist nie null** | Bei vielen Nullen verzerren Mittelwerte die Prognose; hier liegt der Bedarf bei 100 Aufträgen je Tag. | Croston, SBA, TSB (geplant) |
+| **Die Zukunft ähnelt der letzten Woche** | Trend, Niveausprung, Feiertage und Aktionen kennen die naiven Verfahren nicht: der Fehler wächst mit dem Trend, nach einem Sprung dauert es Wochen. | Exponentielle Glättung, Dynamische Regression (inzwischen gebaut) |
+| **Eine Reihe genügt** | Alle Verfahren sehen nur die eigene Reihe; ähnliche Depots teilen ihr Wissen nicht. | Globale Modelle: Boosting, Vortrainiertes Netz (inzwischen gebaut) |
+| **Es gibt eine Punktprognose** | Das Rauschen der Reihe bleibt: die Untergrenze ist nicht null, und die Prognose sagt nichts über das Risiko. | Prognoseintervalle (inzwischen gebaut) |
+| **Der Bedarf ist nie null** | Bei vielen Nullen verzerren Mittelwerte die Prognose; hier liegt der Bedarf bei 100 Aufträgen je Tag. | Croston, SBA, TSB (inzwischen gebaut) |
 | **Erzeugte Reihe, zwölf Seeds** | Das Vehikel kennt genau die Muster, die es erzeugt; echte Reihen sind unordentlicher (Ausreißer, Lücken, wechselnde Wochenmuster). Die Zahlen gelten für diese Reihen und Größen. | – |
 
 ## Tests
@@ -95,3 +95,7 @@ streamlit run app.py
 ```
 
 Gebaut mit Streamlit, Plotly und numpy.
+
+---
+
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zur Reihe: [Zeitreihen-Prognose: von Naiv bis Vortraining](https://sebastianhanisch.net/konzepte-zeitreihen-prognose.html).
