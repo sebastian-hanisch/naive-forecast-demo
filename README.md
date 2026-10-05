@@ -7,7 +7,7 @@ Erstes Stück (Wurzel) der **Zeitreihen-Prognose-Linie** der "Konzepte"-Reihe im
 
 Bevor ein Prognoseverfahren etwas taugt, muss es eine **naive Prognose** schlagen: den letzten Wert fortschreiben, den Wert derselben Woche wiederholen, über ein paar Wochen mitteln. Die Demo zeigt an den **Tagesaufträgen eines Depots** (drei Jahre täglich, Wochenmuster, Trend,
 Jahresmuster, Feiertage, Aktionen, auf Wunsch ein Niveausprung), wie weit sechs solche Verfahren kommen – und genauso wichtig, **wie man Prognosen fair vergleicht**: mit vielen Ursprüngen statt einem Testzeitraum (Rolling-Origin) und mit einer Kennzahl, die nicht vom Niveau der Reihe abhängt (MASE).
-Weil die Reihe erzeugt ist, gibt es außerdem eine **Untergrenze**, die kein Verfahren im Mittel unterschreiten kann: das Rauschen der Reihe selbst (die Prognose "wahrer Erwartungswert"). Alle Daten sind erzeugt, die Rechnung ist in numpy geschrieben.
+Weil die Reihe erzeugt ist, gibt es außerdem eine **Untergrenze**, die kein Verfahren, das den Erwartungswert schätzt, im Mittel unterschreiten kann: das Rauschen der Reihe selbst (die Prognose "wahrer Erwartungswert"; für die MAE wäre streng genommen der Median der Reihe noch minimal besser, siehe Modell). Alle Daten sind erzeugt, die Rechnung ist in numpy geschrieben.
 
 **Bezug zu OR:** jede Bestands-, Personal- und Tourenplanung beginnt mit einer Nachfrageprognose – und mit der Frage, wie gut sie ist.
 
@@ -26,7 +26,7 @@ Der Plan der Linie erwartete: "Naive ist schwer zu schlagen". Die Messung differ
   Niveausprung, Feiertage (zehn Ruhetage je Jahr, am Folgetag ein Nachholeffekt), drei Aktionswochen je Jahr; multiplikatives, mittelwerttreues log-normales Rauschen. **1 095 Tage**; die Ursprünge liegen im **letzten Jahr** (ab Tag 730).
 - **Verfahren** (`nf_forecast.py`): Mittelwert, naiv, saisonal naiv, Wochenmittel (k Wochen), Vorjahr (52 Wochen zurück), Drift; auf Wunsch nur ein gleitendes Fenster der letzten 4 bis 26 Wochen.
 - **Kennzahlen:** MAE, RMSE, Verzerrung (Prognose minus Ist), **MASE** (MAE geteilt durch den saisonal naiven Fehler innerhalb der ersten 730 Trainingstage; Hyndman/Koehler 2006); Auswertung über alle Ursprünge (Standard: jeder Tag des Testjahres, Horizont 14 Tage).
-- **Orakel:** dieselbe Kennzahl für die Prognose $\hat y = \mu$; im Mittel die untere Grenze.
+- **Orakel:** dieselbe Kennzahl für die Prognose $\hat y = \mu$; im Mittel die untere Grenze für Erwartungswert-Schätzer. Voraussetzung: für RMSE und Verzerrung ist der Erwartungswert optimal, für die MAE (und damit die MASE) der Median $\mu e^{-\sigma^2/2}$ der log-normalen Reihe. Dessen MASE liegt über zwölf Seeds bei Rauschen 0,14 um 0,2 % (0,733 statt 0,735) und bei 0,40 um 2 % (0,792 statt 0,808) tiefer (Orakel-Prüflauf); kein Verfahren der Demo nutzt das.
 
 ## Methodik
 

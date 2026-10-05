@@ -81,7 +81,7 @@ with st.expander("So funktioniert der Vergleich", expanded=True):
 2. **Verfahren.** *Mittelwert* (Mittel der Vergangenheit), *naiv* (letzter Tag), *saisonal naiv* (derselbe Wochentag der letzten Woche), *Wochenmittel* (derselbe Wochentag, gemittelt über die letzten $k$ Wochen), *Vorjahr* (derselbe Wochentag vor 52 Wochen)
    und *Drift* (letzter Tag plus mittlere Tagesänderung). Auf Wunsch sehen sie nur ein gleitendes Fenster der letzten Wochen.
 3. **MASE.** Der mittlere absolute Fehler geteilt durch den mittleren absoluten Fehler der saisonal naiven Prognose im Training (Hyndman/Koehler 2006). Eine MASE unter 1 heißt: besser als saisonal naiv im Training; sie ist von der Größe des Depots unabhängig.
-4. **Orakel.** Weil die Reihe erzeugt ist, ist ihr wahrer Erwartungswert bekannt. Der Fehler der Prognose "Erwartungswert" ist die **Untergrenze** im Mittel: darunter liegt nur Glück.
+4. **Orakel.** Weil die Reihe erzeugt ist, ist ihr wahrer Erwartungswert bekannt. Der Fehler der Prognose "Erwartungswert" ist die **Untergrenze** im Mittel für Verfahren, die den Erwartungswert schätzen: darunter liegt nur Glück. Streng genommen ist der Erwartungswert nur für RMSE und Verzerrung der beste Wert; die MAE (und damit die MASE) wäre mit dem Median der Reihe noch etwas kleiner (bei Rauschen 0,14 um 0,2 %, bei 0,40 um 2 %).
         """
     )
 
@@ -152,7 +152,7 @@ c1, c2, c3, c4 = st.columns(4)
 c1.metric(f"Bestes Verfahren: {SHORT[best]}", f"MASE {de(sm[best]['mase'], 2)}", help="Kleinste MASE über alle Ursprünge und Horizonte.")
 c2.metric("Saisonal naiv (letzte Woche)", f"MASE {de(sm['snaive']['mase'], 2)}", help="Derselbe Wochentag der letzten Woche.")
 c3.metric("Naiv (letzter Tag)", f"MASE {de(sm['naive']['mase'], 2)}", help="Der letzte beobachtete Tag, für alle Horizonte fortgeschrieben.")
-c4.metric("Orakel-Untergrenze", f"MASE {de(a.oracle['mase'], 2)}", help="Fehler der Prognose 'wahrer Erwartungswert' gegen die beobachteten Werte: das Rauschen der Reihe. Kein Verfahren liegt im Mittel darunter.")
+c4.metric("Orakel-Untergrenze", f"MASE {de(a.oracle['mase'], 2)}", help="Fehler der Prognose 'wahrer Erwartungswert' gegen die beobachteten Werte: das Rauschen der Reihe. Kein Verfahren, das den Erwartungswert schätzt, liegt im Mittel darunter (ein Median-Schätzer läge bei der MAE minimal darunter).")
 st.plotly_chart(build_bars(a), width="stretch", key="bars_chart")
 rows = [{"Verfahren": method_label(m, K), "MASE": de(sm[m]["mase"], 2), "MAE (Aufträge)": de(sm[m]["mae"], 1), "RMSE": de(sm[m]["rmse"], 1), "Verzerrung (Prognose minus Ist)": de(sm[m]["me"], 1), "Bester Ursprung (Anteil)": pct(a.winners[m])} for m in sorted(C.METHODS, key=lambda m: sm[m]["mase"])]
 st.dataframe(rows, hide_index=True)
@@ -278,7 +278,7 @@ with st.expander("📐 Mathematische Formulierung"):
 Mittelwert $\bar y$; naiv $y_{t-1}$; saisonal naiv $y_{t-7+((j-1) \bmod 7)}$; Wochenmittel $\frac1k\sum_{i=1}^{k} y_{t-7i+((j-1) \bmod 7)}$; Vorjahr $y_{t-364+j-1}$; Drift $y_{t-1} + j\,\frac{y_{t-1} - y_{t-m}}{m-1}$.
 
 **Kennzahlen.** $\mathrm{MAE} = \frac1{|O|h}\sum_{t \in O}\sum_{j}\lvert \hat y_{t+j-1} - y_{t+j-1}\rvert$ über alle Ursprünge $O$, $\mathrm{RMSE}$ und Verzerrung $\mathrm{ME}$ analog;
-$\mathrm{MASE} = \mathrm{MAE} / \frac1{T-7}\sum_{u=7}^{T-1}\lvert y_u - y_{u-7}\rvert$ mit $T$ = Länge der ersten Trainingsdaten (Hyndman/Koehler 2006). **Orakel:** dieselbe MAE mit $\hat y = \mu$ - die Untergrenze im Mittel.
+$\mathrm{MASE} = \mathrm{MAE} / \frac1{T-7}\sum_{u=7}^{T-1}\lvert y_u - y_{u-7}\rvert$ mit $T$ = Länge der ersten Trainingsdaten (Hyndman/Koehler 2006). **Orakel:** dieselbe MAE mit $\hat y = \mu$ - die Untergrenze im Mittel für Erwartungswert-Schätzer (die MAE-optimale Prognose wäre der Median $\mu e^{-\sigma^2/2}$, minimal tiefer).
 
 Implementiert in `nf_forecast.py` (Verfahren, Rolling-Origin, Kennzahlen), `nf_scenario.py` (die Reihe), `nf_evaluation.py` (Analyse, vier Experimente).
         """
