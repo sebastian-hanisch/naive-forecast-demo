@@ -69,6 +69,19 @@ Bevor ein Prognoseverfahren etwas taugt, muss es eine **naive Prognose** schlage
 die nicht vom Niveau der Reihe abhängt (MASE). Dazu eine **Untergrenze**, die kein Verfahren unterschreiten kann: das Rauschen der Reihe selbst.
 """
 )
+
+# erklaerseite:einfach:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/prognose-erklaert.json, nicht von Hand ändern)
+with st.expander("💬 In einfachen Worten"):
+    st.markdown(
+        """
+Stellen Sie sich den Disponenten eines Depots vor, der die Aufträge der nächsten Tage schätzen muss. Die einfachste Schätzung schreibt fort, was zuletzt galt: den Wert von heute, den vom gleichen Wochentag der Vorwoche oder den Durchschnitt des gleichen Wochentags über ein paar Wochen. Eine solche **naive Prognose** ist der Maßstab, den jedes aufwendigere Verfahren schlagen muss. In der Demo ist der Durchschnitt über mehrere Wochen der stärkste dieser Maßstäbe, der letzte Tag allein dagegen ein schwacher.
+
+Wie fair der Vergleich ist, hängt von der Auswertung ab. Ein einzelner Testzeitraum kann täuschen, deshalb startet die Demo die Prognose an jedem Tag des letzten Jahres neu (**Rolling-Origin**, ein wandernder Startpunkt). Die **Untergrenze** zeigt, wie viel Zufall in den Aufträgen steckt: Darunter kommt im Mittel kein Verfahren, das den wahren Erwartungswert schätzt.
+
+[Ausführlich und verständlich erklärt, mit Fachteil](https://sebastianhanisch.net/prognose-erklaert.html)
+        """
+    )
+# erklaerseite:einfach:end
 st.caption(
     "Erstes Stück (Wurzel) der **Zeitreihen-Prognose-Linie** der \"Konzepte\"-Reihe und die erste Linie des Portfolios mit Prognosen; alle Daten sind erzeugt, die Rechnung ist in numpy geschrieben. "
     "**Bezug zu OR:** jede Bestands-, Personal- und Tourenplanung beginnt mit einer Nachfrageprognose - und mit der Frage, wie gut sie ist."
@@ -269,6 +282,32 @@ st.caption("Die Linie: Naive Prognose → Exponentielle Glättung → ARIMA → 
 st.markdown("---")
 
 with st.expander("📐 Mathematische Formulierung"):
+    # erklaerseite:lesehilfe:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/prognose-erklaert.json, nicht von Hand ändern)
+    st.markdown(
+        r"""
+**Lesehilfe.** Gegeben sind die Tagesaufträge $y_0, y_1, \dots$ eines Depots bis zum Tag $t-1$. Gesucht sind Prognosen $\hat y$ für die nächsten $h$ Tage und ein fairer Vergleich ihrer Fehler über viele Ursprünge $t$.
+
+| Symbol | Bedeutung |
+|---|---|
+| $y_t$ | Aufträge am Tag $t$ (erzeugte Reihe) |
+| $\mu_t$ | wahrer Erwartungswert am Tag $t$, also die Aufträge ohne Zufall |
+| $\sigma$, $z_t$ | Stärke des Rauschens bzw. Standardnormalzahl, die den Zufall des Tages liefert |
+| $L$, $g$ | Grundniveau (Aufträge je Tag) bzw. Trend je Jahr |
+| $w$, $a$, $\varphi$ | Wochenmuster, Stärke und Phase des Jahresmusters |
+| $s_t$, $f_t$, $p_t$ | Niveausprung, Feiertagseffekt bzw. Aktionseffekt am Tag $t$ |
+| $t$ | Ursprung: bekannt sind die Tage $0$ bis $t-1$ |
+| $h$, $j$ | Prognosehorizont (Zahl der Tage) bzw. der $j$-te Tag danach |
+| $k$ | Zahl der Wochen im Wochenmittel |
+| $m$ | Länge der sichtbaren Vergangenheit (für die Drift) |
+| $O$, $\lvert O\rvert$ | Menge der Ursprünge bzw. ihre Anzahl |
+| $\hat y$ | Prognosewert für einen Tag |
+| $T$ | Länge der ersten Trainingsdaten (Nenner der MASE) |
+| $\mathrm{MAE}$, $\mathrm{MASE}$ | mittlerer absoluter Fehler bzw. Fehler geteilt durch den saisonal naiven Fehler im Training |
+
+[Schritt für Schritt erklärt, mit Herleitung und Literatur](https://sebastianhanisch.net/prognose-erklaert.html#fachleute)
+        """
+    )
+    # erklaerseite:lesehilfe:end
     st.markdown(
         r"""
 **Reihe.** $y_t = \mathrm{round}\big(\mu_t \, e^{\sigma z_t - \sigma^2/2}\big)$ mit $z_t \sim \mathcal N(0,1)$ und $\mu_t = L\,(1 + g\,t/365)\,w_{t \bmod 7}\,(1 + a \sin(2\pi t/365 + \varphi))\,s_t\,f_t\,p_t$
