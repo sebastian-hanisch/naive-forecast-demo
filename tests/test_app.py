@@ -26,7 +26,7 @@ def _ok(at):
 def test_default_run_shows_the_seasonal_success_and_all_charts():
     at = _run()
     _ok(at)
-    assert len(at.metric) == 4 and len(at.get("plotly_chart")) == 5 and any("Das Wochenmuster trägt" in s.value for s in at.success)
+    assert len(at.metric) == 4 and len(at.get("plotly_chart")) == 5 and any("Das Wochenmuster stimmt" in s.value for s in at.success)
 
 
 @pytest.mark.parametrize("name", list(P.PRESETS))

@@ -171,7 +171,7 @@ rows = [{"Verfahren": method_label(m, K), "MASE": de(sm[m]["mase"], 2), "MAE (Au
 st.dataframe(rows, hide_index=True)
 gap = sm[best]["mase"] / a.oracle["mase"] - 1
 if sm["naive"]["mase"] > 1.5 * sm["snaive"]["mase"]:
-    st.success(f"✅ Das Wochenmuster trägt: saisonal naiv erreicht MASE {de(sm['snaive']['mase'], 2)} gegen {de(sm['naive']['mase'], 2)} beim letzten Tag. Das beste Verfahren ({SHORT[best]}, {de(sm[best]['mase'], 2)}) liegt noch {pct(gap)} über der "
+    st.success(f"✅ Das Wochenmuster stimmt: saisonal naiv erreicht MASE {de(sm['snaive']['mase'], 2)} gegen {de(sm['naive']['mase'], 2)} beim letzten Tag. Das beste Verfahren ({SHORT[best]}, {de(sm[best]['mase'], 2)}) liegt noch {pct(gap)} über der "
                f"Orakel-Untergrenze ({de(a.oracle['mase'], 2)}) - so viel Spielraum bleibt für bessere Verfahren.")
 elif sm["naive"]["mase"] < 1.1 * sm["snaive"]["mase"]:
     st.info(f"Ohne starkes Wochenmuster liegen naiv ({de(sm['naive']['mase'], 2)}) und saisonal naiv ({de(sm['snaive']['mase'], 2)}) gleichauf; das beste Verfahren ist {SHORT[best]} mit {de(sm[best]['mase'], 2)} (Orakel {de(a.oracle['mase'], 2)}).")
